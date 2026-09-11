@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO Meta Tags -->
+    <title>Strong Password Generator - Free Online Secure Password Tool</title>
+    <meta name="description" content="Generate strong, secure, and random passwords instantly in your browser. Customize password length, numbers, symbols, and letters with 100% client-side privacy.">
+    <meta name="keywords" content="password generator, strong password generator, random password, secure password generator, online password creator">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-indigo-600">SecurityTools <span class="text-gray-500 text-sm font-normal">| Password Generator</span></h1>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">100% Offline Generation</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto px-4 py-8 flex-grow w-full">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Random Password Generator</h2>
+            <p class="text-gray-600">Create custom, highly secure passwords to protect your online accounts.</p>
+        </div>
+
+        <!-- Password Result Box -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+            <div class="relative flex items-center mb-4">
+                <input type="text" id="password-output" readonly class="w-full text-xl font-mono p-4 pr-24 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 focus:outline-none select-all" placeholder="Click Generate">
+                <button onclick="copyPassword()" class="absolute right-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">
+                    <span id="copy-text">Copy</span>
+                </button>
+            </div>
+
+            <!-- Strength Meter -->
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-semibold text-gray-500">Strength:</span>
+                <div class="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden">
+                    <div id="strength-bar" class="h-full w-0 transition-all duration-300 bg-red-500"></div>
+                </div>
+                <span id="strength-text" class="text-xs font-bold text-gray-600">Weak</span>
+            </div>
+        </div>
+
+        <!-- Controls Box -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+            <!-- Length Slider -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-sm font-semibold text-gray-700">Password Length:</label>
+                    <span id="length-val" class="text-sm font-bold text-indigo-600">16</span>
+                </div>
+                <input type="range" id="length-range" min="6" max="64" value="16" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" oninput="document.getElementById('length-val').innerText = this.value; generatePassword();">
+            </div>
+
+            <!-- Checkboxes -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <label class="flex items-center space-x-3 cursor-pointer">
+                    <input type="checkbox" id="inc-uppercase" checked class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" onchange="generatePassword()">
+                    <span class="text-sm text-gray-700">Uppercase Letters (A-Z)</span>
+                </label>
+                <label class="flex items-center space-x-3 cursor-pointer">
+                    <input type="checkbox" id="inc-lowercase" checked class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" onchange="generatePassword()">
+                    <span class="text-sm text-gray-700">Lowercase Letters (a-z)</span>
+                </label>
+                <label class="flex items-center space-x-3 cursor-pointer">
+                    <input type="checkbox" id="inc-numbers" checked class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" onchange="generatePassword()">
+                    <span class="text-sm text-gray-700">Numbers (0-9)</span>
+                </label>
+                <label class="flex items-center space-x-3 cursor-pointer">
+                    <input type="checkbox" id="inc-symbols" checked class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" onchange="generatePassword()">
+                    <span class="text-sm text-gray-700">Symbols (!@#$%^&*)</span>
+                </label>
+            </div>
+
+            <button onclick="generatePassword()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow transition">
+                Generate New Password
+            </button>
+        </div>
+
+        <!-- SEO Article Section -->
+        <section class="mt-12 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h3 class="text-lg font-bold text-gray-900 mb-3">Why Use a Strong Password Generator?</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                Using weak or repeated passwords across multiple platforms makes your accounts vulnerable to cyber attacks. A randomized, complex password significantly lowers the risk of brute-force credential stuffing.
+            </p>
+            <h3 class="text-lg font-bold text-gray-900 mb-3">100% Client-Side Privacy</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+                Your generated passwords are built locally using your browser's native JavaScript execution engine. Nothing is transmitted over the network, ensuring complete confidentiality.
+            </p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-6 mt-12 text-center text-xs text-gray-500">
+        &copy; 2026 SecurityTools. All rights reserved. Free Online Browser-based Tools.
+    </footer>
+
+    <!-- Logic Script -->
+    <script>
+        const charsUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const charsLower = "abcdefghijklmnopqrstuvwxyz";
+        const charsNumbers = "0123456789";
+        const charsSymbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+        function generatePassword() {
+            const length = parseInt(document.getElementById('length-range').value);
+            const incUpper = document.getElementById('inc-uppercase').checked;
+            const incLower = document.getElementById('inc-lowercase').checked;
+            const incNumbers = document.getElementById('inc-numbers').checked;
+            const incSymbols = document.getElementById('inc-symbols').checked;
+
+            let validChars = "";
+            if (incUpper) validChars += charsUpper;
+            if (incLower) validChars += charsLower;
+            if (incNumbers) validChars += charsNumbers;
+            if (incSymbols) validChars += charsSymbols;
+
+            if (!validChars) {
+                document.getElementById('password-output').value = "Please select at least 1 option";
+                updateStrength(0);
+                return;
+            }
+
+            let password = "";
+            const array = new Uint32Array(length);
+            window.crypto.getRandomValues(array);
+
+            for (let i = 0; i < length; i++) {
+                password += validChars[array[i] % validChars.length];
+            }
+
+            document.getElementById('password-output').value = password;
+            calculateStrength(password, length, incUpper, incLower, incNumbers, incSymbols);
+        }
+
+        function calculateStrength(pwd, length, u, l, n, s) {
+            let score = 0;
+            if (length >= 12) score += 2;
+            else if (length >= 8) score += 1;
+            
+            const typesCount = [u, l, n, s].filter(Boolean).length;
+            score += typesCount;
+
+            updateStrength(score);
+        }
+
+        function updateStrength(score) {
+            const bar = document.getElementById('strength-bar');
+            const text = document.getElementById('strength-text');
+
+            if (score === 0) {
+                bar.style.width = "0%";
+                text.innerText = "None";
+            } else if (score <= 2) {
+                bar.style.width = "33%";
+                bar.className = "h-full transition-all duration-300 bg-red-500";
+                text.innerText = "Weak";
+            } else if (score <= 4) {
+                bar.style.width = "66%";
+                bar.className = "h-full transition-all duration-300 bg-yellow-500";
+                text.innerText = "Medium";
+            } else {
+                bar.style.width = "100%";
+                bar.className = "h-full transition-all duration-300 bg-green-500";
+                text.innerText = "Strong";
+            }
+        }
+
+        function copyPassword() {
+            const output = document.getElementById('password-output');
+            if (!output.value || output.value.startsWith("Please select")) return;
+
+            navigator.clipboard.writeText(output.value).then(() => {
+                const copyBtnText = document.getElementById('copy-text');
+                copyBtnText.innerText = "Copied!";
+                setTimeout(() => { copyBtnText.innerText = "Copy"; }, 2000);
+            });
+        }
+
+        // Initialize on page load
+        window.onload = generatePassword;
+    </script>
+</body>
+</html>
